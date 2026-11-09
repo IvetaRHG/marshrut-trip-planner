@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Маршрут — учебное приложение для подготовки к поездке «Лиссабон и океан»: маршрут по дням, бюджет, бронирования и чек-лист.">
+    <title>Маршрут — Лиссабон и океан</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app" id="appRoot">
+        <!-- Демонстрационная панель состояний в правом нижнем углу -->
+        <section class="demo-states-floating" aria-label="Демо-состояния">
+            <details class="demo-states-floating__details">
+                <summary class="demo-states-floating__summary">Демо состояний</summary>
+                <div class="demo-states-floating__content">
+                    <div class="demo-states-floating__group" data-viewport-group>
+                        <div class="demo-states-floating__label">Ширина экрана</div>
+                        <div class="demo-states-floating__buttons">
+                            <button type="button" class="demo-state-btn demo-viewport-btn is-active" data-viewport="desktop" aria-pressed="true">Десктоп · 1440</button>
+                            <button type="button" class="demo-state-btn demo-viewport-btn" data-viewport="tablet" aria-pressed="false">Планшет · 768</button>
+                            <button type="button" class="demo-state-btn demo-viewport-btn" data-viewport="mobile" aria-pressed="false">Смартфон · 390</button>
+                        </div>
+                    </div>
+                    <div class="demo-states-floating__group">
+                        <div class="demo-states-floating__label">Состояния</div>
+                        <div class="demo-states-floating__buttons">
+                            <button type="button" class="demo-state-btn" data-demo-state="loading">Загрузка</button>
+                            <button type="button" class="demo-state-btn" data-demo-state="error">Ошибка</button>
+                            <button type="button" class="demo-state-btn" data-demo-state="empty">Пустой день</button>
+                            <button type="button" class="demo-state-btn" data-demo-state="success">Готово</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- Обложка поездки -->
+        <header class="cover">
+            <div class="cover__background" aria-hidden="true">
+                <div class="cover__gradient"></div>
+                <svg class="cover__route-svg" viewBox="0 0 1200 120" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="var(--accent-violet)" />
+                            <stop offset="50%" stop-color="var(--accent-sea)" />
+                            <stop offset="100%" stop-color="var(--accent-coral)" />
+                        </linearGradient>
+                    </defs>
+                    <path class="cover__route-path" d="M 40 78 C 140 44 240 34 340 58 C 440 82 520 104 620 82 C 720 60 800 34 900 50 C 1000 66 1080 88 1160 62" stroke="url(#routeGradient)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <circle class="cover__route-dot" cx="40" cy="78" r="6"/>
+                    <circle class="cover__route-dot" cx="340" cy="58" r="6"/>
+                    <circle class="cover__route-dot" cx="480" cy="87" r="6"/>
+                    <circle class="cover__route-dot" cx="620" cy="82" r="6"/>
+                    <circle class="cover__route-dot" cx="900" cy="50" r="6"/>
+                    <circle class="cover__route-dot" cx="1160" cy="62" r="6"/>
+                </svg>
+            </div>
+            <div class="cover__content">
+                <div class="cover__header">
+                    <h1 class="cover__title" id="tripName">Лиссабон и океан</h1>
+                    <p class="cover__subtitle">Путешествие по Португалии</p>
+                </div>
+                <div class="cover__info">
+                    <div class="cover__info-item">
+                        <span class="cover__info-label">Даты</span>
+                        <span class="cover__info-value" id="tripDates">12–18 сентября</span>
+                    </div>
+                    <div class="cover__info-item">
+                        <span class="cover__info-label">Дней</span>
+                        <span class="cover__info-value" id="tripDaysCount">7 дней</span>
+                    </div>
+                    <div class="cover__info-item">
+                        <span class="cover__info-label">Обратный отсчёт</span>
+                        <span class="cover__info-value" id="countdown">Расчёт...</span>
+                    </div>
+                </div>
+                <div class="cover__route-text">
+                    <span id="routeText">Лиссабон → Кашкайш → Синтра → Эрисейра → океан → Лиссабон</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Мобильный режим «Сегодня»: на телефоне идёт сразу после обложки -->
+        <section class="today-mobile" id="todayMobile" aria-label="Сегодня">
+            <header class="today-mobile__header">
+                <h2 class="today-mobile__title">Сегодня</h2>
+                <p class="today-mobile__day-info" id="todayMobileDayInfo">12 сентября — Лиссабон</p>
+            </header>
+            <article class="today-mobile__card today-mobile__card--event">
+                <div class="today-mobile__card-label">Ближайшее событие</div>
+                <div class="today-mobile__event-title" id="todayMobileEventTitle">Нет событий</div>
+                <div class="today-mobile__event-meta">
+                    <span id="todayMobileEventTime">--:--</span>
+                    <span id="todayMobileEventPlace">--</span>
+                </div>
+                <div class="today-mobile__event-booking" id="todayMobileEventBooking">Статус: —</div>
+            </article>
+            <article class="today-mobile__card today-mobile__card--task">
+                <div class="today-mobile__card-label">Следующая задача</div>
+                <div class="today-mobile__task-text" id="todayMobileTaskText">Нет невыполненных задач</div>
+            </article>
+        </section>
+
+        <!-- Переключатель темпа -->
+        <section class="pace-toggle" aria-label="Темп путешествия">
+            <div class="pace-toggle__header">
+                <h2 class="pace-toggle__title">Темп путешествия</h2>
+                <p class="pace-toggle__hint" id="paceHint">Больше времени на отдых, меньше точек в программе.</p>
+            </div>
+            <div class="pace-toggle__options" role="group" aria-label="Выбор темпа">
+                <button type="button" class="pace-option is-active" data-pace="calm" id="paceCalm" aria-pressed="true">
+                    <span class="pace-option__label">Спокойно</span>
+                </button>
+                <button type="button" class="pace-option" data-pace="intense" id="paceIntense" aria-pressed="false">
+                    <span class="pace-option__label">Насыщенно</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Основной макет -->
+        <main class="main-layout" id="mainLayout">
+            <div class="col-main">
+                <!-- Маршрут по дням -->
+                <section class="route-section" aria-label="Маршрут по дням">
+                    <header class="section-header">
+                        <h2 class="section-header__title">Маршрут по дням</h2>
+                    </header>
+                    <div class="route-days" id="routeDays" role="group" aria-label="Дни путешествия">
+                        <!-- Дни будут добавлены через JavaScript -->
+                    </div>
+                    <div class="route-day-info">
+                        <div class="route-day-info__header">
+                            <div>
+                                <h3 class="route-day-info__city" id="selectedDayCity">Лиссабон</h3>
+                                <p class="route-day-info__date" id="selectedDayDate">12 сентября</p>
+                            </div>
+                            <div class="route-day-cost">
+                                <span class="route-day-cost__label">Стоимость дня</span>
+                                <span class="route-day-cost__value" id="selectedDayCost">0 ₽</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="routeStateContainer">
+                        <div class="route-schedule" id="routeSchedule" aria-live="polite">
+                            <!-- Расписание будет добавлено через JavaScript -->
+                        </div>
+                        <div class="route-schedule-empty" id="routeScheduleEmpty" style="display: none;">
+                            <p class="route-schedule-empty__text">В этот день событий не запланировано.</p>
+                        </div>
+                        <div class="state-skeleton" id="routeSkeleton" style="display: none;">
+                            <div class="skeleton-line skeleton-line--title"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line skeleton-line--short"></div>
+                        </div>
+                        <div class="state-error" id="routeError" style="display: none;">
+                            <div class="state-error__icon">⚠️</div>
+                            <p class="state-error__text">Не удалось загрузить события маршрута. Попробуйте повторить.</p>
+                            <button type="button" class="state-retry-btn" data-retry-target="route">Повторить</button>
+                        </div>
+                        <div class="state-empty-day" id="routeEmptyDay" style="display: none;">
+                            <div class="state-empty-day__icon">📅</div>
+                            <p class="state-empty-day__text">В этот день событий не запланировано.</p>
+                            <p class="state-empty-day__hint">Выберите другой день или измените темп путешествия.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Бронирования -->
+                <section class="bookings-section" aria-label="Бронирования">
+                    <header class="section-header section-header--with-counter">
+                        <h2 class="section-header__title">Бронирования</h2>
+                        <span class="bookings-counter" id="bookingsConfirmedCount" aria-live="polite">0/4 подтверждено</span>
+                    </header>
+                    <div id="bookingsStateContainer">
+                        <div class="bookings-list" id="bookingsList">
+                            <!-- Карточки бронирований будут добавлены через JavaScript -->
+                        </div>
+                        <div class="state-skeleton" id="bookingsSkeleton" style="display: none;">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                        <div class="state-error" id="bookingsError" style="display: none;">
+                            <div class="state-error__icon">⚠️</div>
+                            <p class="state-error__text">Не удалось загрузить бронирования. Попробуйте повторить.</p>
+                            <button type="button" class="state-retry-btn" data-retry-target="bookings">Повторить</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Чек-лист подготовки -->
+                <section class="checklist-section" aria-label="Чек-лист подготовки">
+                    <header class="section-header">
+                        <h2 class="section-header__title">Чек-лист подготовки</h2>
+                    </header>
+                    <div class="checklist-progress">
+                        <div class="checklist-progress__info">
+                            <span id="checklistDone">0</span>/<span id="checklistTotal">0</span> выполнено (<span id="checklistPercent">0</span>%)
+                        </div>
+                        <div class="checklist-progress__bar">
+                            <div class="checklist-progress__fill" id="checklistProgressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="checklistStateContainer">
+                        <div class="checklist" id="checklist">
+                            <!-- Чек-лист будет добавлен через JavaScript -->
+                        </div>
+                        <div class="state-skeleton" id="checklistSkeleton" style="display: none;">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                        <div class="state-error" id="checklistError" style="display: none;">
+                            <div class="state-error__icon">⚠️</div>
+                            <p class="state-error__text">Не удалось загрузить чек-лист. Попробуйте повторить.</p>
+                            <button type="button" class="state-retry-btn" data-retry-target="checklist">Повторить</button>
+                        </div>
+                    </div>
+                    <div class="checklist-actions">
+                        <button type="button" class="reset-data-btn" id="resetDataBtn">Сбросить учебные данные</button>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="col-aside">
+                <!-- Бюджет -->
+                <section class="budget-section" aria-label="Бюджет">
+                    <header class="section-header">
+                        <h2 class="section-header__title">Бюджет</h2>
+                    </header>
+                    <div id="budgetStateContainer">
+                        <div id="budgetContent">
+                            <div class="budget-summary">
+                                <div class="budget-summary__row">
+                                    <span class="budget-summary__label">Общий бюджет</span>
+                                    <span class="budget-summary__value budget-summary__value--total" id="totalBudget">180 000 ₽</span>
+                                </div>
+                                <div class="budget-summary__row">
+                                    <span class="budget-summary__label">Запланированная сумма</span>
+                                    <span class="budget-summary__value" id="plannedBudget">0 ₽</span>
+                                </div>
+                                <div class="budget-summary__row">
+                                    <span class="budget-summary__label">Остаток</span>
+                                    <span class="budget-summary__value budget-summary__value--remaining" id="remainingBudget">0 ₽</span>
+                                </div>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="budget-progress__bar">
+                                    <div class="budget-progress__fill" id="budgetProgressFill" style="width: 0%"></div>
+                                </div>
+                                <div class="budget-progress__text">
+                                    <span id="budgetProgressPercent">0%</span> использовано
+                                </div>
+                            </div>
+                            <div class="budget-categories">
+                                <h3 class="budget-categories__title">Категории расходов</h3>
+                                <div class="budget-categories__list" id="budgetCategoriesList">
+                                    <!-- Категории будут добавлены через JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="state-skeleton" id="budgetSkeleton" style="display: none;">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                        <div class="state-error" id="budgetError" style="display: none;">
+                            <div class="state-error__icon">⚠️</div>
+                            <p class="state-error__text">Не удалось загрузить бюджет. Попробуйте повторить.</p>
+                            <button type="button" class="state-retry-btn" data-retry-target="budget">Повторить</button>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </main>
+
+        <!-- Компактная нижняя навигация -->
+        <nav class="bottom-nav" id="bottomNav" aria-label="Основная навигация">
+            <button type="button" class="bottom-nav__btn is-active" data-nav="today">Сегодня</button>
+            <button type="button" class="bottom-nav__btn" data-nav="route">Маршрут</button>
+            <button type="button" class="bottom-nav__btn" data-nav="budget">Бюджет</button>
+            <button type="button" class="bottom-nav__btn" data-nav="prep">Подготовка</button>
+        </nav>
+
+        <!-- Уведомления -->
+        <div class="toast-container" id="toastContainer" role="status" aria-live="polite" aria-label="Уведомления"></div>
+    </div>
+
+    <!-- Предпросмотр приложения в ширине планшета или смартфона -->
+    <dialog class="viewport-dialog" id="viewportDialog" aria-label="Предпросмотр экрана">
+        <div class="viewport-dialog__bar">
+            <div class="viewport-dialog__heading">
+                <span class="viewport-dialog__title" id="viewportDialogTitle">Предпросмотр</span>
+                <span class="viewport-dialog__hint">Демо-режим ширины экрана</span>
+            </div>
+            <button type="button" class="viewport-dialog__close" id="viewportCloseBtn">Закрыть</button>
+        </div>
+        <div class="viewport-dialog__stage" id="viewportStage">
+            <div class="viewport-dialog__scale" id="viewportScale">
+                <div class="viewport-dialog__frame" id="viewportFrame">
+                    <iframe class="viewport-dialog__iframe" id="viewportIframe" title="Предпросмотр приложения «Маршрут»"></iframe>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="app.js"></script>
+</body>
+</html>
